@@ -1,0 +1,235 @@
+:root{
+    --red: #CD1818;
+    --black: #001524;
+}
+
+*{
+    margin :0;
+    padding: 0;;
+}
+
+body{
+    overflow: hidden;
+    background-color: var(--black);
+    width: 100%;
+    height: 100vh;
+   
+}
+main{
+    width: inherit;
+    height: inherit; 
+    background-image: url("../436360449489.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    animation: 1.7s linear 1 fade-in;
+}
+@keyframes fade-in {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+
+/*Design part*/
+
+
+.top-design{
+    height: 50%;
+    background-color: var(--black);
+    border-bottom: 5px solid var(--red);
+    position: absolute;
+    top: -50%;
+    width: inherit;
+    animation:2s linear 1 slideup;
+    z-index: 100;
+    
+}
+@keyframes slideup {
+    from{
+        top:0%;
+    }
+    to{
+        top:-50%;
+    }
+}
+.bottom-design{
+    
+   border-top: 5px solid var(--red);
+   background-color: black;
+   width: inherit;
+   position: absolute;
+   bottom:-50%;
+   animation:2s linear 1 slidedown;
+   height: 50%;
+    background-color: var(--black);
+}
+@keyframes slidedown {
+    from{
+        bottom:0;
+    }
+    to{
+        bottom:-50%;
+    }
+}
+
+/*content*/
+.content{
+    padding: 50px;
+    height: 200px;
+    width:30%;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    left:250px;
+    top:250px;
+    border-radius: 30px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.30);
+    
+}
+
+.title{
+    text-align: left;
+    color: var(--red);
+    font-size: 50px;
+    font-family: 'Black Ops One';
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+.title::after{
+    content: '. . .';
+
+    animation: 1s linear infinite flicker;
+}
+@keyframes flicker{
+    from {
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+/* Buttons */
+.sidebar{
+    position: absolute;
+    right: 150px;
+    top:250px;
+    height: 200px;
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button{
+    position: relative;
+    display: inline-block;
+    padding: 25px 30px;
+    margin: 40px 0;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: 0.5s;
+    letter-spacing: 4px;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: 'Black Ops One';
+
+}
+
+#demo:hover{
+    background: #03e9f4;
+    color: #050801;
+    box-shadow: 0 0 5px #03e9f4,
+                0 0 25px #03e9f4,
+                0 0 50px #03e9f4,
+                0 0 200px #03e9f4;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0005);
+}
+#demo:nth-child(1){
+    filter: hue-rotate(270deg);
+}
+#demo:nth-child(2){
+    filter: hue-rotate(110deg);
+}
+#demo span{
+    position: absolute;
+    display: block;
+}
+#demo span:nth-child(1){
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg,transparent,#03e9f4);
+    animation: animate1 1s linear infinite;
+}
+@keyframes animate1{
+    0%{
+        left: -100%;
+    }
+    50%,100%{
+        left: 100%;
+    }
+}
+#demo span:nth-child(2){
+    top: -100%;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg,transparent,#03e9f4);
+    animation: animate2 1s linear infinite;
+    animation-delay: 0.25s;
+}
+@keyframes animate2{
+    0%{
+        top: -100%;
+    }
+    50%,100%{
+        top: 100%;
+    }
+}
+#register span:nth-child(3){
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(270deg,transparent,#03e9f4);
+    animation: animate3 1s linear infinite;
+    animation-delay: 0.50s;
+}
+@keyframes animate3{
+    0%{
+        right: -100%;
+    }
+    50%,100%{
+        right: 100%;
+    }
+}
+
+
+#demo span:nth-child(4){
+    bottom: -100%;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(360deg,transparent,#03e9f4);
+    animation: animate4 1s linear infinite;
+    animation-delay: 0.75s;
+}
+@keyframes animate4{
+    0%{
+        bottom: -100%;
+    }
+    50%,100%{
+        bottom: 100%;
+    }
+}
+
+
+
+.seperator{
+    width: 30px;
+}
