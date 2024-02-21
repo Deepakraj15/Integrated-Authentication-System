@@ -1,0 +1,9 @@
+
+shape_predictor_68_face_landmarks.dat
+
+# folder
+models
+CapturedImage >*
+
+# training files
+*.csv
