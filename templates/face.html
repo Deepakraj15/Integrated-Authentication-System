@@ -5,9 +5,82 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenCV Camera Feed</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style/face.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>OpenCV Camera Feed</h1>
-    <img src="{{ url_for('video_feed') }}" alt="Camera Feed">
+ <main>
+    
+<div class="contanier">
+    <img class="videobox" id="video-feed" src="{{ url_for('video_feed') }}" alt="Camera Feed">
+
+    <div class="loader hide" id="loader"></div>
+</div>
+    <button id="checkimage" onclick="captureFrame()">Capture Image</button>
+    <script>
+        function captureFrame() {
+    var loader = document.getElementById('loader');
+    var video = document.getElementById('video-feed');
+    var canvas = document.createElement('canvas');
+    
+   
+    // Show the loader
+    loader.classList.remove('hide');
+    loader.classList.add('show');
+
+    canvas.width = video.clientWidth;
+    canvas.height = video.clientHeight;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    var imageData = canvas.toDataURL('image/jpg');
+   
+    fetch('/process', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image_data: imageData })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        // Hide the loader after processing is complete
+        loader.classList.remove('show');
+        loader.classList.add('hide');
+        window.location.href='/qrgenerator'
+        
+    })
+    .catch(error => {
+        console.error('There was a problem with your fetch operation:', error);
+        // Hide the loader in case of an error
+        loader.classList.remove('show');
+        loader.classList.add('hide');
+    });
+    
+}
+
+    </script>
+</main>
+<aside>
+    <div class="icon-cont">
+        <img class="icon" src="{{ url_for('static', filename='images/unchecked.png') }}" alt="untick">
+        <p>Face Recognition</p>
+    </div>
+    <div class="icon-cont">
+        <img class="icon" src="{{ url_for('static', filename='images/unchecked.png') }}" alt="untick">
+        <p>Mobile Authenticator</p>
+    </div>
+    <div class="icon-cont">
+        <img class="icon" src="{{ url_for('static', filename='images/unchecked.png') }}" alt="untick">
+        <p>Signature Analysis</p>
+    </div>
+</aside>
 </body>
 </html>
