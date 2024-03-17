@@ -3,7 +3,7 @@ shape_predictor_68_face_landmarks.dat
 
 # folder
 models
-CapturedImage >*
+CapturedImage
 
 # training files
 *.csv
