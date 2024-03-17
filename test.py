@@ -1,5 +1,8 @@
-import os
-import cv2
-names = os.listdir('./CapturedImage')
-for name in names:
-    print(name.split(".")[0])
+array = [[5, 3, 4],
+         [1, 5, 8],
+         [6, 4, 2]]
+
+for i in range(3):
+    for j in range(3):
+        if(i == j):
+            print(array[i][j],end=" ")

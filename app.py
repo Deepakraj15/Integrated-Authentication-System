@@ -1,10 +1,11 @@
 from io import BytesIO
 from flask import Flask,render_template,Response,request,jsonify
 from pymongo import MongoClient
+import tensorflow as tf
+import numpy as np
 import cv2
 import dlib
 import base64
-import numpy as np
 import time
 import os
 import face_recognition
@@ -12,7 +13,12 @@ import qrcode
 
 app = Flask(__name__)
 
-global name
+global name,data1,data2
+
+client = MongoClient("mongodb+srv://demo:12345@cluster0.adlnkmq.mongodb.net/")
+db = client["project"]
+collection = db["mobileapp"]
+
 def generate_frames():
     detector = dlib.get_frontal_face_detector()
 
@@ -79,8 +85,6 @@ def captureandcompare():
 def qrgenerator():
     
     data = name
-
-    # Generate QR code in memory
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -89,13 +93,9 @@ def qrgenerator():
     )
     qr.add_data(data)
     qr.make(fit=True)
-    
-    # Create a BytesIO buffer to store the QR code image
     qr_img = BytesIO()
     qr.make_image(fill_color="black", back_color="white").save(qr_img, format="PNG")
     qr_img.seek(0)
-    
-    # Convert the QR code image to a base64-encoded string
     qr_img_base64 = base64.b64encode(qr_img.getvalue()).strip()
 
 
@@ -103,4 +103,78 @@ def qrgenerator():
 
 @app.route('/verifypin',methods=['POST'])
 def verify_pin():
-    pass
+    data = request.json
+    result = collection.find_one(data)
+    if(result):
+        send_success_response()
+        render_template('signature_verfication.html')
+    else:
+        return jsonify({"message":"Error"}),500
+
+def send_success_response():
+    return jsonify({"message":"Success"}),200
+
+@app.route('/signature_verification')
+def signature_verification():
+    return render_template('sign.html')
+
+@app.route('/predict', methods=['POST'])
+def classify_strokes():
+    data = request.json  
+    model = tf.keras.models.load_model('./models/Best_RNN_model.h5')
+    coordinates = [float(coord_str) for coord_pair in data for coord_str in coord_pair.split(',')]
+    test_XX = np.expand_dims(coordinates, axis=-1)
+    predictions = model.predict(test_XX)
+    predicted_labels = (predictions > 0.5).astype(int)
+    check_stroke_prediction(predicted_labels)
+    return jsonify({'message':'prediction'})
+
+@app.route('/process_signature_image',methods =['POST'])
+def classify_image():
+    try:
+        model = tf.keras.models.load_model('./models/model1.h5')
+        data = request.json
+        image_data = data.get('image_data')    
+        image_data = image_data.split(',')[1]
+        image_bytes = base64.b64decode(image_data)
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        signature_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        resized_image = cv2.resize(signature_image, (256, 256))
+        img_array = np.expand_dims(resized_image, axis=0)  
+        img_array = img_array.astype('float32') / 255.0
+        predictions = model.predict(img_array)
+        check_image_prediction(predictions[0])
+        return jsonify({'message': 'success'})
+    except Exception as e:
+        return jsonify({'error': 'Something went wrong'})
+@app.route('/results')
+def render_results():
+    if(data1 and data2):
+        data = True
+    elif(data2):
+        data = True
+    else:
+        data = False
+    return render_template('sign_update.html',data = data)
+
+def check_image_prediction(predictions):
+    global data2
+    print(predictions)
+    if(predictions[1]>0.6):
+        data2  = True
+    else:
+        data2 = False
+    print(data2)
+def check_stroke_prediction(predicted_labels):
+    global data1
+    w_count,r_count = 0,0
+    for label in predicted_labels:
+        if(label[0] == 1):
+            w_count +=1
+        if(label[1] == 1):
+            r_count +=1
+    if(r_count > w_count):
+        data1 = True
+    else:
+        data1 = False
+    print("["+str(w_count)+","+str(r_count)+"]")

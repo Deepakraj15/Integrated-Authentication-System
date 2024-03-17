@@ -49,9 +49,15 @@ aside{
 p{
     margin-left: 10px;
     font-size: 17px;
+    
 }
 h3{
     font-size: 30px;
     color: white;
     letter-spacing: 1px;
+}
+span{
+    padding: 10px;
+    background-color:white;
+    border-radius:7px;
 }

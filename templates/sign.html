@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature verifiction</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style/sign.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='style/qrcode.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+    <main>
+        <h1>Signature</h1>
+    <canvas id="myCanvas" width="650px" height="650px"></canvas>
+    <button id="check">click</button>
+    <script defer>
+        
+
+        const canvas = document.getElementById('myCanvas');
+        const context = canvas.getContext('2d');
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        
+        let mouseX, mouseY;
+        let isMouseDown = false;
+        let prevMouseX, prevMouseY;
+        let data = [];
+        
+        canvas.addEventListener('mousedown', function(event) {
+            
+            if (event.button === 0) {
+                isMouseDown = true;
+                updateMouseCoordinates(event);
+            }
+        });
+        
+        
+        canvas.addEventListener('mouseup', function() {
+            isMouseDown = false;
+            prevMouseX = undefined;
+            prevMouseY = undefined;
+        });
+        
+        
+        canvas.addEventListener('mousemove', function(event) {
+            if (isMouseDown) {
+                updateMouseCoordinates(event);
+                if (prevMouseX !== undefined && prevMouseY !== undefined) {
+                    context.beginPath();
+                    context.moveTo(prevMouseX, prevMouseY);
+                    context.lineTo(mouseX, mouseY);
+                    context.strokeStyle = 'blue';
+                    context.lineWidth = 2;
+                    context.stroke();
+                    const coordinates = { x: mouseX, y: mouseY };
+                    data.push([coordinates]);
+                }
+                prevMouseX = mouseX;
+                prevMouseY = mouseY;
+            }
+        });
+        
+        function updateMouseCoordinates(event) {
+            const rect = canvas.getBoundingClientRect();
+            mouseX= event.clientX - rect.left;
+            mouseY= event.clientY - rect.top;
+           
+        }
+        
+        
+        document.getElementById('check').addEventListener('click', () => {
+            JSON.stringify(data);
+
+            var extractedData; 
+            var constcontant;
+        if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0]) && data[0].length === 1) {
+            
+            extractedData = data.map(entry => entry[0]);
+            
+            constcontant= extractedData.map(entry => [entry.x, entry.y].join(','));
+    
+        }
+    fetch('/predict', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(constcontant)
+    })
+    .then(response => response.json())
+    .then(data => {
+    
+    console.log(data);
+   
+    }      )
+    .catch(error => {
+    console.error('Error:', error);
+    });
+});
+    document.getElementById('check').addEventListener('click', () => {
+                const dataURL = canvas.toDataURL('image/jpeg');
+                fetch('/process_signature_image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image_data: dataURL, coordinates: data })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    window.location.href='/results'
+                    
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+
+            </script>
+</main>
+<aside>
+    <div class="icon-cont">
+        <img class="icon" src="{{ url_for('static', filename='images/check.png') }}" alt="untick">
+        <p>Face Recognition</p>
+    </div>
+    <div class="icon-cont">
+        <img class="icon" src="{{ url_for('static', filename='images/check.png') }}" alt="untick">
+        <p>Mobile Authenticator</p>
+    </div>
+    <div class="icon-cont">
+        <img class="icon" src="{{ url_for('static', filename='images/unchecked.png') }}" alt="untick">
+        <p>Signature Analysis</p>
+    </div>
+</aside>
+</body>
+</html>

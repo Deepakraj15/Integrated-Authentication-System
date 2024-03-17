@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style/qrcode.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main>
+        <span>
+            The signature verified as {{ data}}
+        </span>
+ </main>
+    <aside>
+        <div class="icon-cont">
+            <img class="icon" src="{{ url_for('static', filename='images/check.png') }}" alt="untick">
+            <p>Face Recognition</p>
+        </div>
+        <div class="icon-cont">
+            <img class="icon" src="{{ url_for('static', filename='images/check.png') }}" alt="untick">
+            <p>Mobile Authenticator</p>
+        </div>
+        <div class="icon-cont">
+            <img class="icon" src="{{ url_for('static', filename='images/check.png') }}" alt="untick">
+            <p>Signature Analysis</p>
+        </div>
+    </aside>
+</body>
+</html>
