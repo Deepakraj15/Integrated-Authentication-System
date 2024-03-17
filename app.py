@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 global name,data1,data2
 
-client = MongoClient("mongodb+srv://demo:12345@cluster0.adlnkmq.mongodb.net/")
+client = MongoClient("<place your own url>")
 db = client["project"]
 collection = db["mobileapp"]
 
